@@ -1,0 +1,8 @@
+# Python libraries to run the notebooks\
+keras
+matplotlib
+numpy
+pandas
+seaborn
+sklearn
+tensorflow
