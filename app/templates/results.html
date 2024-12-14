@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Results</title>
+</head>
+<body>
+    <h1>Prediction Results</h1>
+    <img src="{{ image_url }}" alt="Uploaded Image" style="max-width:300px;"/>
+    <ul>
+        {% for class, prob in predictions.items() %}
+            <li>{{ class }}: {{ prob | round(2) }}</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Go Back</a>
+</body>
+</html>
