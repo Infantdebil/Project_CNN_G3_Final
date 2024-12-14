@@ -1,54 +1,38 @@
-from flask import Flask, render_template, request, redirect, url_for
-from werkzeug.utils import secure_filename
-import os
+import streamlit as st
+import tensorflow as tf
+from PIL import Image
 import numpy as np
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing import image
+import os
 
-# Flask app setup
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static/uploads/'
-app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
+# Load the saved model
+model = tf.keras.models.load_model("model.h5")
 
-# Load the model
-model = load_model('model_p.h5')
-class_names = ['Class 1', 'Class 2', 'Class 3']  # Update with your classes
+# Define class names (update with your own classes)
+class_names = ['Class 1', 'Class 2', 'Class 3', 'Class 4']
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+# App title
+st.title("Image Classification App")
 
-# Home route
-@app.route('/')
-def index():
-    return render_template('index.html')
+# Upload an image
+uploaded_file = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
 
-# Prediction route
-@app.route('/predict', methods=['POST'])
-def predict():
-    if 'file' not in request.files:
-        return redirect(request.url)
+if uploaded_file is not None:
+    # Display the uploaded image
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Uploaded Image", use_column_width=True)
+    st.write("")
 
-    file = request.files['file']
+    # Preprocess the image
+    img = image.resize((128, 128))  # Resize to the input shape of your model
+    img_array = np.array(img) / 255.0  # Normalize pixel values
+    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
 
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
+    # Get predictions
+    predictions = model.predict(img_array)
+    probabilities = tf.nn.softmax(predictions[0])  # Convert logits to probabilities
 
-        # Preprocess the image
-        img = image.load_img(filepath, target_size=(224, 224))  # Match your input shape
-        img_array = image.img_to_array(img)
-        img_array = np.expand_dims(img_array, axis=0) / 255.0
+    # Display predictions
+    st.write("Prediction Results:")
+    for i, (class_name, prob) in enumerate(zip(class_names, probabilities)):
+        st.write(f"{class_name}: {prob:.2%}")
 
-        # Make predictions
-        predictions = model.predict(img_array)
-        probabilities = predictions[0]
-        prediction_results = {class_names[i]: float(probabilities[i]) for i in range(len(class_names))}
-
-        return render_template('result.html', predictions=prediction_results, image_url=filepath)
-
-    return redirect(url_for('index'))
-
-if __name__ == '__main__':
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    app.run(debug=True)
