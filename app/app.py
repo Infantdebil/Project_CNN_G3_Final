@@ -5,7 +5,7 @@ import numpy as np
 import os
 
 # Load the saved model
-model = tf.keras.models.load_model("model.h5")
+model = tf.keras.models.load_model("model_p.h5")
 
 # Define class names (update with your own classes)
 class_names = ['Class 1', 'Class 2', 'Class 3', 'Class 4']
