@@ -1,26 +1,3 @@
-import subprocess
-import sys
-
-# Function to install a package if it's not already installed
-def install_if_missing(package):
-    try:
-        __import__(package)
-    except ImportError:
-        print(f"Installing missing package: {package}")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-
-# Check and install required packages
-required_packages = {
-    "streamlit": "streamlit",
-    "tensorflow": "tensorflow",
-    "PIL": "pillow",
-    "numpy": "numpy"
-}
-
-for package_name, install_name in required_packages.items():
-    install_if_missing(install_name)
-
-# Now you can import the packages
 import streamlit as st
 import tensorflow as tf
 from PIL import Image, ImageOps
@@ -28,6 +5,7 @@ import numpy as np
 import os
 import csv
 
+# Ensure TensorFlow compatibility (use python <=3.11)
 # Load and compile the saved model
 model = tf.keras.models.load_model("model_p.h5")
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
@@ -47,17 +25,19 @@ st.image("header_image.png", use_container_width=True)
 st.write("""
 # Custom Object Detection Model
 
-Our self-trained object detection model is designed to classify images into the following ten categories: **airplane**, **automobile**, **bird**, **cat**, **deer**, **dog**, **frog**, **horse**, **ship**, and **truck**.
+This self-trained model classifies images into the following categories: 
+**airplane, automobile, bird, cat, deer, dog, frog, horse, ship, and truck**.
 
-The model was trained using the **CIFAR-10 dataset**, and all images were resized to **64x64** with bicubic interpolation. Augmentations were applied during training to improve generalization.
+The model uses the CIFAR-10 dataset and resizes all images to **64x64** pixels for compatibility.
 
-The model achieved an accuracy of **87% on training validation**, demonstrating its reliability in classifying objects within this dataset. This project was collaboratively developed by **Auréle, Enrique, and Paul**.
+Feedback is used to retrain and improve the model in future updates.
 """)
 
 # Upload an image
 uploaded_file = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
 
 if uploaded_file is not None:
+    # Layout: side-by-side display for the image and predictions
     col1, col2 = st.columns([1, 2])
 
     with col1:
@@ -96,10 +76,11 @@ if uploaded_file is not None:
 
         # Feedback section
         st.write("### Feedback")
-        st.write("Please provide feedback if the classification is incorrect or if the image does not belong to the classification categories.")
+        st.write("If the classification is incorrect or the image does not belong to any class, please let us know!")
 
+        # Add "Not part of classification" option
         feedback_options = class_names + ["Not part of classification"]
-        correct_label = st.selectbox("Select the correct label or indicate that it's not part of the classification:", feedback_options)
+        correct_label = st.selectbox("Select the correct label or indicate it's not part of the classification:", feedback_options)
 
         if st.button("Submit Feedback"):
             # Save the image and feedback to a folder
@@ -112,6 +93,6 @@ if uploaded_file is not None:
                 writer.writerow([uploaded_file.name, correct_label])
             
             if correct_label == "Not part of classification":
-                st.success("Thank you for your feedback! Your input has been saved and will help identify out-of-scope images.")
+                st.success("Thank you for your feedback! This will help us identify out-of-scope images.")
             else:
-                st.success("Thank you for your feedback! Your input has been saved and will be considered during the next retraining of the model.")
+                st.success("Thank you for your feedback! Your input will be considered in the next model retraining.")
