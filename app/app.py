@@ -8,6 +8,29 @@ import os
 import tensorflow as tf
 import streamlit as st
 
+# Define file paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Get the app.py directory
+MODEL_PATH = os.path.join(BASE_DIR, "model_p.h5")
+IMAGE_PATH = os.path.join(BASE_DIR, "header_image.png")
+
+# Debug: Verify the paths
+st.write(f"Loading model from: {MODEL_PATH}")
+st.write(f"Loading image from: {IMAGE_PATH}")
+
+# Load the model
+try:
+    model = tf.keras.models.load_model(MODEL_PATH)
+    st.success("Model loaded successfully!")
+except Exception as e:
+    st.error(f"Error loading model: {e}")
+
+# Display header image
+try:
+    st.image(IMAGE_PATH, use_container_width=True)
+except Exception as e:
+    st.error(f"Error loading image: {e}")
+
+
 # Debug current directory
 st.write("Current Working Directory:", os.getcwd())
 st.write("Files in Directory:", os.listdir("."))
