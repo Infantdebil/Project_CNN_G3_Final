@@ -42,7 +42,7 @@ This model classifies images into the following categories:
 The model uses the CIFAR-10 dataset and resizes all images to **64x64** pixels for 
 compatibility. The model achieved an accuracy of **87% on training validation**, 
 demonstrating its reliability in classifying objects within this dataset. 
-This project was collaboratively developed by **Auréle, Enrique, and Paul.
+This project was collaboratively developed by **Auréle, Enrique, and Paul**.
           
 Feedback is used to retrain and improve the model in future updates.
 """)
