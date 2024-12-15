@@ -1,3 +1,26 @@
+import subprocess
+import sys
+
+# Function to install a package if it's not already installed
+def install_if_missing(package):
+    try:
+        __import__(package)
+    except ImportError:
+        print(f"Installing missing package: {package}")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+# Check and install required packages
+required_packages = {
+    "streamlit": "streamlit",
+    "tensorflow": "tensorflow",
+    "PIL": "pillow",
+    "numpy": "numpy"
+}
+
+for package_name, install_name in required_packages.items():
+    install_if_missing(install_name)
+
+# Now you can import the packages
 import streamlit as st
 import tensorflow as tf
 from PIL import Image, ImageOps
