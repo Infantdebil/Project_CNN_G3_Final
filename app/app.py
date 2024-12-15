@@ -19,7 +19,7 @@ FEEDBACK_FILE = os.path.join(FEEDBACK_FOLDER, "feedback.csv")
 try:
     model = tf.keras.models.load_model(MODEL_PATH)
     model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    st.success("Model loaded successfully!")
+    # st.success("Model loaded successfully!")
 except Exception as e:
     st.error(f"Error loading model: {e}")
 
@@ -78,7 +78,14 @@ if uploaded_file is not None:
 
             st.write("### Prediction Results")
             if max_prob > second_max_prob * 1.25:
-                st.write(f"**Prediction: {class_names[max_index]}** with **{max_prob:.2%} confidence.**")
+                st.markdown(f"""
+                    <div style="font-size: 24px; font-weight: bold; margin-bottom: 5px;">
+                             The model is quite sure that your image represents a: {class_names[max_index]}
+                    </div>
+                    <div style="font-size: 18px; font-weight: normal;">
+                        with <b>{max_prob:.2%}</b> confidence.
+                    </div>
+                """, unsafe_allow_html=True)
             else:
                 st.write("**The model is not confident enough to make a prediction.**")
                 st.write("Top 3 Prediction Results:")
@@ -117,6 +124,6 @@ if uploaded_file is not None:
 # ===========================
 # Debugging Information (Optional)
 # ===========================
-st.write("**Debugging Information:**")
-st.write(f"Current Working Directory: {os.getcwd()}")
-st.write("Files in Directory:", os.listdir(BASE_DIR))
+# st.write("**Debugging Information:**")
+# st.write(f"Current Working Directory: {os.getcwd()}")
+# st.write("Files in Directory:", os.listdir(BASE_DIR))
