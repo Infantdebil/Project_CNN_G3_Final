@@ -4,10 +4,23 @@ from PIL import Image, ImageOps
 import numpy as np
 import os
 import csv
+import os
+import tensorflow as tf
+import streamlit as st
 
-# Ensure TensorFlow compatibility (use python <=3.11)
-# Load and compile the saved model
-model = tf.keras.models.load_model("model_p.h5")
+# Debug current directory
+st.write("Current Working Directory:", os.getcwd())
+st.write("Files in Directory:", os.listdir("."))
+
+# Load model dynamically
+model_path = os.path.join(os.path.dirname(__file__), "model_p.h5")
+st.write(f"Loading model from: {model_path}")
+
+try:
+    model = tf.keras.models.load_model(model_path)
+    st.success("Model loaded successfully!")
+except Exception as e:
+    st.error(f"Failed to load model: {e}")
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
 # Define class names
